@@ -6,6 +6,7 @@ const pieRadius = Math.min(width, height) / 2
 const maxRadius = pieRadius + labelSpace
 const colorScheme = d3.scaleOrdinal().range(['#497BE0', '#518AF1', '#6699F4', '#77AFFF', '#8ABFFF', '#9ACFFF', '#dd4477', '#66aa00', '#b82e2e', '#316395', '#994499', '#22aa99', '#aaaa11', '#6633cc', '#e67300', '#8b0707', '#651067', '#329262', '#5574a6', '#3b3eac'])
 const innerRadius = 3.5
+const rotateDuration = 560
 
 const data = [
   { label: 'JavaScript', value: 20, score: 65 },
@@ -29,9 +30,7 @@ const svg = d3.select('#piechart')
 
 const arc = d3.arc()
   .innerRadius(innerRadius)
-  .outerRadius((d) => {
-    return d.data.score * 2
-  })
+  .outerRadius((d) => d.data.score * 2)
 
 const hoverArc = d3.arc()
   .innerRadius(innerRadius)
@@ -65,7 +64,7 @@ const path = svg.append('g')
   .enter()
   .append('path')
   .attr('d', arc)
-  .attr('fill', (d, i) => colorScheme(d.data.label))
+  .attr('fill', (d) => colorScheme(d.data.label))
 
 const hoverArcG = svg.selectAll('g.hover-arc-g')
   .data(pie(data))
@@ -93,8 +92,20 @@ hoverArcG.append('text')
 
 function rotate(el, degree, orgTransform = '') {
   el.transition()
-    .duration(560)
+    .duration(rotateDuration)
     .attr('transform', () => `${orgTransform} rotate(${degree})`)
+}
+
+function adjustTextAnchor(el, pieceDegree, rotateDegree) {
+  let finalDegree = pieceDegree + rotateDegree
+  if (finalDegree > 360) {
+    finalDegree -= 360
+  }
+  if (finalDegree < 180) {
+    el.attr('text-anchor', 'start')
+  } else {
+    el.attr('text-anchor', 'end')
+  }
 }
 
 hoverPath.on('click', function (d) {
@@ -103,14 +114,17 @@ hoverPath.on('click', function (d) {
   const midAngle = (d.startAngle + d.endAngle) / 2
   const off = 35
   const rotateDegree = 360 - toDegree(midAngle) + off
-
   rotate(path, rotateDegree)
   rotate(hoverArcG, rotateDegree)
-  // TODO: re-calculate `text-anchor`
+
   d3.selectAll('.label').each(function (e) {
     const el = d3.select(this)
     const orgTransform = el.attr('transform')
     const orgTranslate = orgTransform.substring(orgTransform.indexOf('(') + 1, orgTransform.indexOf(')')).split(',')
+    const pieceDegree = toDegree((e.endAngle + e.startAngle) / 2)
+    this.classList.add('hide')
+    setTimeout(() => this.classList.remove('hide'), rotateDuration)
     rotate(el, rotateDegree * -1, `translate(${orgTranslate[0]}, ${orgTranslate[1]})`)
+    adjustTextAnchor(el, pieceDegree, rotateDegree)
   })
 })
