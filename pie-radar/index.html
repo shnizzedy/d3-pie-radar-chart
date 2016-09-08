@@ -3,36 +3,12 @@
 <head>
 	<meta charset="UTF-8">
 	<title>D3 Pie Radar Chart</title>
-	<style>
-		#piechart {
-			position: relative;
-		}
-
-		.label {
-			transition: opacity ease-out .28s;
-		}
-
-		.label.hide {
-			transition: none;
-		}
-
-		.hide {
-			opacity: 0;
-		}
-
-		.hide:hover {
-			opacity: .36;
-		}
-
-		.hover-layer {
-			cursor: pointer;
-			transition: all ease-out .28s;
-		}
-	</style>
+	<link rel="stylesheet" href="../style.css">
 </head>
 <body>
 	<div id="piechart"></div>
 	<script src="https://d3js.org/d3.v4.js"></script>
+	<script src="../utils.js"></script>
 	<script src="pie.js"></script>
 </body>
 </html>

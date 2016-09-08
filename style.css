@@ -1,0 +1,28 @@
+body {
+	font-family: San Francisco Display, sans-serif;
+}
+
+.label {
+	transition: opacity ease-out .28s;
+}
+
+.label-percent {
+	font-weight: bold;
+}
+
+.label.hide {
+	transition: none;
+}
+
+.hide {
+	opacity: 0;
+}
+
+.hover-layer.hide:hover {
+	opacity: .36;
+}
+
+.hover-layer {
+	cursor: pointer;
+	transition: all ease-out .28s;
+}
