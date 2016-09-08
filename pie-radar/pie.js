@@ -4,7 +4,7 @@ const height = 400
 const labelSpace = 50
 const pieRadius = Math.min(width, height) / 2
 const maxRadius = pieRadius + labelSpace
-const colorScheme = d3.scaleOrdinal().range(['#497BE0', '#518AF1', '#6699F4', '#77AFFF', '#8ABFFF', '#9ACFFF', '#dd4477', '#66aa00', '#b82e2e', '#316395', '#994499', '#22aa99', '#aaaa11', '#6633cc', '#e67300', '#8b0707', '#651067', '#329262', '#5574a6', '#3b3eac'])
+const colorScheme = d3.scaleOrdinal().range(['#0674A0', '#99d5eb', '#4cb5db', '#33abd6', '#0096cc', '#0382b0', '#dd4477', '#66aa00', '#b82e2e', '#316395', '#994499', '#22aa99', '#aaaa11', '#6633cc', '#e67300', '#8b0707', '#651067', '#329262', '#5574a6', '#3b3eac'])
 const innerRadius = 3.5
 const rotateDuration = 560
 const svgTranslate = [width / 2 + labelSpace * 2, height / 2 + labelSpace * 2]
@@ -75,14 +75,21 @@ const hoverArcG = svg.selectAll('g.hover-arc-g')
 
 const hoverPath = hoverArcG.append('path')
   .attr('d', hoverArc)
-  .attr('fill', 'rgba(0, 0, 0, .1)')
+  .attr('fill', 'rgba(0, 0, 0, .06)')
   .attr('class', 'hide hover-layer')
+
+hoverArcG.append('circle')
+  .attr('cx', (d) => hoverArc.centroid(d)[0] * 1.96)
+  .attr('cy', (d) => hoverArc.centroid(d)[1] * 1.96)
+  .attr('r', 2.8)
+  .attr('fill', '#33abd6')
 
 hoverArcG.append('text')
   .html((d) =>
     `${d.data.label}<tspan class="label-percent"> ${getPercent(d.data.value, total)}%</tspan>`
   )
   .attr('class', 'label')
+  .attr('dy', '.35em')
   .attr('text-anchor', (d) =>
     (d.endAngle + d.startAngle) / 2 > Math.PI ? 'end' : 'start'
   )

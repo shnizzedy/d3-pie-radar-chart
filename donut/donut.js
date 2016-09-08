@@ -32,7 +32,7 @@ const arc = d3.arc()
   .outerRadius(donutRadius)
 
 const borderArc = d3.arc()
-  .innerRadius(donutRadius - 7)
+  .innerRadius(donutRadius - 6)
   .outerRadius(donutRadius)
 
 const donut = d3.pie()
@@ -50,18 +50,25 @@ arcG.append('path')
   .attr('fill', (d) => colorScheme(d.data.label))
   .attr('class', 'piece')
 
+arcG.append('circle')
+  .attr('cx', (d) => arc.centroid(d)[0] * 1.375)
+  .attr('cy', (d) => arc.centroid(d)[1] * 1.375)
+  .attr('r', 2.8)
+  .attr('fill', '#077e6f')
+
 arcG.append('text')
+  .attr('class', 'label')
+  .attr('dy', '.35em')
   .html((d) =>
     `${d.data.label}<tspan class="label-percent"> ${getPercent(d.data.value, total)}%</tspan>`
   )
-  .attr('class', 'label')
   .attr('text-anchor', (d) =>
     (d.endAngle + d.startAngle) / 2 > Math.PI ? 'end' : 'strat'
   )
   .attr('transform', (d) => {
     const c = arc.centroid(d)
-    const x = c[0] * 1.5
-    const y = c[1] * 1.5
+    const x = c[0] * 1.48
+    const y = c[1] * 1.48
     return `translate(${x}, ${y})`
   })
 
@@ -72,7 +79,7 @@ const hoverPath = arcG.append('path')
 
 const activeBorder = arcG.append('path')
   .attr('d', borderArc)
-  .attr('fill', 'rgba(0, 0, 0, .14)')
+  .attr('fill', 'rgba(0, 0, 0, .16)')
   .attr('class', 'hide active-border')
 
 function hoverPathClicked(d) {
