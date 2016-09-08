@@ -75,7 +75,7 @@ const hoverArcG = svg.selectAll('g.hover-arc-g')
 const hoverPath = hoverArcG.append('path')
   .attr('d', hoverArc)
   .attr('fill', 'rgba(0, 0, 0, .1)')
-  .attr('class', 'hide hoverLayer')
+  .attr('class', 'hide hover-layer')
 
 hoverArcG.append('text')
   .text((d) => d.data.label)
@@ -108,8 +108,8 @@ function adjustTextAnchor(el, pieceDegree, rotateDegree) {
   }
 }
 
-hoverPath.on('click', function (d) {
-  hoverPath.attr('class', 'hide hoverLayer')
+function hoverPathClicked(d) {
+  hoverPath.attr('class', 'hide hover-layer')
   this.classList.remove('hide')
   const midAngle = (d.startAngle + d.endAngle) / 2
   const off = 35
@@ -127,4 +127,9 @@ hoverPath.on('click', function (d) {
     rotate(el, rotateDegree * -1, `translate(${orgTranslate[0]}, ${orgTranslate[1]})`)
     adjustTextAnchor(el, pieceDegree, rotateDegree)
   })
-})
+}
+
+hoverPath.on('click', hoverPathClicked)
+
+// init state
+hoverPathClicked.bind(d3.select('.hover-layer').node())(d3.select('.hover-layer').data()[0])
