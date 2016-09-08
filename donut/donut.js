@@ -4,7 +4,7 @@ const height = 400
 const labelSpace = 50
 const donutRadius = Math.min(width, height) / 2
 const maxRadius = donutRadius + labelSpace
-const colorScheme = d3.scaleOrdinal().range(['#099e8b', '#1ce5cb', '#16dcc3', '#16c9b2', '#0cb19c', '#9ACFFF', '#dd4477', '#66aa00', '#b82e2e', '#316395', '#994499', '#22aa99', '#aaaa11', '#6633cc', '#e67300', '#8b0707', '#651067', '#329262', '#5574a6', '#3b3eac'])
+const colorScheme = d3.scaleOrdinal().range(['#0CA28F', '#1ce5cb', '#16dcc3', '#16c9b2', '#0cb19c', '#9ACFFF', '#dd4477', '#66aa00', '#b82e2e', '#316395', '#994499', '#22aa99', '#aaaa11', '#6633cc', '#e67300', '#8b0707', '#651067', '#329262', '#5574a6', '#3b3eac'])
 const innerRadius = 90
 const rotateDuration = 560
 const svgTranslate = [width / 2 + labelSpace * 2, height / 2 + labelSpace * 2]
@@ -29,6 +29,10 @@ const svg = d3.select('#donutchart')
 
 const arc = d3.arc()
   .innerRadius(innerRadius)
+  .outerRadius(donutRadius)
+
+const borderArc = d3.arc()
+  .innerRadius(donutRadius - 7)
   .outerRadius(donutRadius)
 
 const donut = d3.pie()
@@ -66,10 +70,17 @@ const hoverPath = arcG.append('path')
   .attr('fill', 'rgba(0, 0, 0, .1)')
   .attr('class', 'hide hover-layer')
 
+const activeBorder = arcG.append('path')
+  .attr('d', borderArc)
+  .attr('fill', 'rgba(0, 0, 0, .14)')
+  .attr('class', 'hide active-border')
+
 function hoverPathClicked(d) {
   if (!this.classList.contains('hide')) return
   hoverPath.attr('class', 'hide hover-layer')
+  activeBorder.attr('class', 'hide active-border')
   this.classList.remove('hide')
+  d3.select(this.parentNode).select('.active-border').node().classList.remove('hide')
   const midAngle = (d.startAngle + d.endAngle) / 2
   const rotateDegree = getRotateDegree(midAngle)
   rotate(svg, rotateDegree, `translate(${svgTranslate[0]}, ${svgTranslate[1]})`)
