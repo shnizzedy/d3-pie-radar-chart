@@ -10,12 +10,11 @@ const rotateDuration = 560
 const svgTranslate = [width / 2 + labelSpace * 2, height / 2 + labelSpace * 2]
 
 const data = [
-  { label: 'JavaScript', value: 20, score: 65 },
-  { label: 'Python', value: 35, score: 85 },
-  { label: 'PHP', value: 10, score: 70 },
-  { label: 'Go', value: 22, score: 90 },
-  { label: 'Ruby', value: 6, score: 95 },
-  { label: 'Java', value: 10, score: 40 }
+  { label: 'Coding', value: 20, score: 2/3 },
+  { label: 'Testing', value: 20, score: 0 },
+  { label: 'Performance', value: 20, score: 1/3 },
+  { label: 'Terminology', value: 20, score: 100 },
+  { label: 'Documentation', value: 20, score: 2/3 },
 ]
 
 let total = 0
