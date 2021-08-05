@@ -1,10 +1,5 @@
-# D3 Chart Samples
+# D3 Pie Radar Chart
 
-Just playing with D3.
+Adapted from [D3 Chart Samples](https://github.com/CodinCat/d3-chart-samples) by **[@CodinCat](https://github.com/CodinCat)**
 
-[Live Demo](https://codincat.github.io/d3-chart-samples/)
-
-### Source
-
-- [Pie Radar Chart](pie-radar)
-- [Donut Chart](donut)
+[Live Demo](https://shnizzedy.github.io/d3-pie-radar-chart/)
