@@ -26,4 +26,4 @@ d3.json('./example.json', pieRadar);
 
 ## Dependencies
 
-* [D3](https://d3js.org) v4+
+* [D3](https://d3js.org) v4 — The upstream project was written in v4, and this repository is just an illustration. I'd want to rewrite into v7 syntax if we were going to use this example for real.
