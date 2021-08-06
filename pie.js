@@ -1,125 +1,144 @@
-/* global d3, getRotateDegree, toDegree, getPercent, rotate, adjustTextAnchor */
-const width = 400
-const height = 400
-const labelSpace = 50
-const pieRadius = Math.min(width, height) / 2
-const maxRadius = pieRadius + labelSpace
-const colorScheme = d3.scaleOrdinal().range(['#0674A0', '#99d5eb', '#4cb5db', '#33abd6', '#0096cc', '#0382b0', '#dd4477', '#66aa00', '#b82e2e', '#316395', '#994499', '#22aa99', '#aaaa11', '#6633cc', '#e67300', '#8b0707', '#651067', '#329262', '#5574a6', '#3b3eac'])
-const innerRadius = 3.5
-const rotateDuration = 560
-const svgTranslate = [width / 2 + labelSpace * 2, height / 2 + labelSpace * 2]
+/* The wedges in the pie */
+const wedges = ['Coding', 'Testing', 'Performance', 'Terminology', 'Documentation'];
 
-const data = [
-  { label: 'Coding', value: 20, score: 2/3 },
-  { label: 'Testing', value: 20, score: 0 },
-  { label: 'Performance', value: 20, score: 1/3 },
-  { label: 'Terminology', value: 20, score: 100 },
-  { label: 'Documentation', value: 20, score: 2/3 },
-]
+/** Function to take an object of {label: tier} items and generate a pie radar plot of that object with the wedges as defined above.
+ * @param {object} initialData The initial data with {label: tier} items, e.g. {'Coding': 'bronze'}
+ * @returns null
+ */
+function pieRadar(initialData) {
+  /* Restructure data for D3 ease */ 
+  const data = wedges.map(d => {
+    if (Object.keys(initialData).includes(d)) {
+      return { 'label': d, 'tier': initialData[d] }
+    }
+    return { 'label': d }
+  });
+  /* global d3, getRotateDegree, toDegree, getPercent, rotate, adjustTextAnchor */
+  const width = 400
+  const height = 400
+  const labelSpace = 50
+  const pieRadius = Math.min(width, height) / 2
+  const maxRadius = pieRadius + labelSpace
+  const tiers = {
+    gold: {
+      color: 'gold',
+      wedge: 100
+    },
+    silver: {
+      color: 'silver',
+      wedge: 200/3
+    },
+    bronze: {
+      color: '#b08d57',
+      wedge: 100/3
+    },
+    null: {
+      color: '#fff',
+      wedge: 0
+    }
+  }
+  tiers.undefined = tiers.null;
+  const innerRadius = 3.5
+  const rotateDuration = 560
+  const svgTranslate = [width / 2 + labelSpace * 2, height / 2 + labelSpace * 2]
 
-let total = 0
-data.forEach((d) => { total += d.value })
+  let total = 0
+  data.forEach((d) => { total += (100 / wedges.length) })
 
-const svg = d3.select('#piechart')
-  .append('svg')
-  .attr('width', width + maxRadius)
-  .attr('height', height + maxRadius)
-  .append('g')
-  .attr('transform', `translate(${svgTranslate[0]}, ${svgTranslate[1]})`)
+  const svg = d3.select('#piechart')
+    .append('svg')
+    .attr('width', width + maxRadius)
+    .attr('height', height + maxRadius)
+    .append('g')
+    .attr('transform', `translate(${svgTranslate[0]}, ${svgTranslate[1]})`)
 
-const arc = d3.arc()
-  .innerRadius(innerRadius)
-  .outerRadius((d) => d.data.score * 2)
+  const arc = d3.arc()
+    .innerRadius(innerRadius)
+    .outerRadius((d) => tiers[d.data.tier].wedge * 2)
 
-const hoverArc = d3.arc()
-  .innerRadius(innerRadius)
-  .outerRadius(pieRadius)
+  const hoverArc = d3.arc()
+    .innerRadius(innerRadius)
+    .outerRadius(pieRadius)
 
-const pie = d3.pie()
-  .sort(null)
-  .value((d) => d.value)
+  const pie = d3.pie()
+    .sort(null)
+    .value(100 / wedges.length)
 
-const strokeWidth = 1
+  const strokeWidth = 1
 
-function drawCircle(r) {
-  svg.append('circle')
-    .attr('cx', 0)
-    .attr('cy', 0)
-    .attr('r', r - strokeWidth)
-    .attr('stroke', '#bbb')
-    .attr('stroke-width', strokeWidth)
-    .attr('fill', 'none')
+  function drawCircle(r) {
+    svg.append('circle')
+      .attr('cx', 0)
+      .attr('cy', 0)
+      .attr('r', r - strokeWidth)
+      .attr('stroke', '#bbb')
+      .attr('stroke-width', strokeWidth)
+      .attr('fill', 'none')
+  }
+
+  /* draw circumference outlines */
+  drawCircle(pieRadius) // gold
+  drawCircle(pieRadius / 3 * 2) // silver
+  drawCircle(pieRadius / 3) // bronze
+
+  // real pie pieces
+  svg.append('g')
+    .selectAll('path')
+    .data(pie(data))
+    .enter()
+    .append('path')
+    .attr('d', arc)
+    .attr('fill', (d) => tiers[d.data.tier].color)
+
+  const hoverArcG = svg.selectAll('g.hover-arc-g')
+    .data(pie(data))
+    .enter()
+    .append('g')
+    .attr('class', 'hover-arc-g')
+
+  const hoverPath = hoverArcG.append('path')
+    .attr('d', hoverArc)
+    .attr('fill', 'rgba(0, 0, 0, .06)')
+    .attr('class', 'hide hover-layer')
+
+  // hoverArcG.append('circle')
+  //   .attr('cx', (d) => hoverArc.centroid(d)[0] * 1.96)
+  //   .attr('cy', (d) => hoverArc.centroid(d)[1] * 1.96)
+  //   .attr('r', 2.8)
+  //   .attr('fill', '#33abd6')
+
+  hoverArcG.append('text')
+    .html((d) => d.data.label)
+    .attr('class', 'label')
+    .attr('dy', '.35em')
+    .attr('text-anchor', 'middle')
+    .attr('transform', (d) => `translate(${hoverArc.centroid(d)})`)
+
+  function hoverPathClicked(d) {
+    if (!this.classList.contains('hide')) return
+    hoverPath.attr('class', 'hide hover-layer')
+    this.classList.remove('hide')
+    const midAngle = (d.startAngle + d.endAngle) / 2
+    const rotateDegree = getRotateDegree(midAngle)
+    rotate(svg, rotateDegree, `translate(${svgTranslate[0]}, ${svgTranslate[1]})`)
+
+    d3.selectAll('.label').each(function (e) {
+      const el = d3.select(this)
+      const orgTransform = el.attr('transform')
+      const orgTranslate = orgTransform.substring(orgTransform.indexOf('(') + 1, orgTransform.indexOf(')')).split(',')
+      const pieceDegree = toDegree((e.endAngle + e.startAngle) / 2)
+      this.classList.add('hide')
+      setTimeout(() => this.classList.remove('hide'), rotateDuration)
+      rotate(el, rotateDegree * -1, `translate(${orgTranslate[0]}, ${orgTranslate[1]})`)
+      // adjustTextAnchor(el, pieceDegree, rotateDegree)
+    })
+  }
+
+  hoverPath.on('click', hoverPathClicked)
+
+  // init state
+  hoverPathClicked.bind(d3.select('.hover-layer').node())(d3.select('.hover-layer').data()[0])
 }
 
-drawCircle(pieRadius)
-drawCircle(pieRadius / 5 * 4)
-drawCircle(pieRadius / 5 * 3)
-drawCircle(pieRadius / 5 * 2)
-drawCircle(pieRadius / 5)
-
-// real pie pieces
-svg.append('g')
-  .selectAll('path')
-  .data(pie(data))
-  .enter()
-  .append('path')
-  .attr('d', arc)
-  .attr('fill', (d) => colorScheme(d.data.label))
-
-const hoverArcG = svg.selectAll('g.hover-arc-g')
-  .data(pie(data))
-  .enter()
-  .append('g')
-  .attr('class', 'hover-arc-g')
-
-const hoverPath = hoverArcG.append('path')
-  .attr('d', hoverArc)
-  .attr('fill', 'rgba(0, 0, 0, .06)')
-  .attr('class', 'hide hover-layer')
-
-hoverArcG.append('circle')
-  .attr('cx', (d) => hoverArc.centroid(d)[0] * 1.96)
-  .attr('cy', (d) => hoverArc.centroid(d)[1] * 1.96)
-  .attr('r', 2.8)
-  .attr('fill', '#33abd6')
-
-hoverArcG.append('text')
-  .html((d) =>
-    `${d.data.label}<tspan class="label-percent"> ${getPercent(d.data.value, total)}%</tspan>`
-  )
-  .attr('class', 'label')
-  .attr('dy', '.35em')
-  .attr('text-anchor', (d) =>
-    (d.endAngle + d.startAngle) / 2 > Math.PI ? 'end' : 'start'
-  )
-  .attr('transform', (d) => {
-    const c = hoverArc.centroid(d)
-    const x = c[0] * 2.1
-    const y = c[1] * 2.1
-    return `translate(${x}, ${y})`
-  })
-
-function hoverPathClicked(d) {
-  if (!this.classList.contains('hide')) return
-  hoverPath.attr('class', 'hide hover-layer')
-  this.classList.remove('hide')
-  const midAngle = (d.startAngle + d.endAngle) / 2
-  const rotateDegree = getRotateDegree(midAngle)
-  rotate(svg, rotateDegree, `translate(${svgTranslate[0]}, ${svgTranslate[1]})`)
-
-  d3.selectAll('.label').each(function (e) {
-    const el = d3.select(this)
-    const orgTransform = el.attr('transform')
-    const orgTranslate = orgTransform.substring(orgTransform.indexOf('(') + 1, orgTransform.indexOf(')')).split(',')
-    const pieceDegree = toDegree((e.endAngle + e.startAngle) / 2)
-    this.classList.add('hide')
-    setTimeout(() => this.classList.remove('hide'), rotateDuration)
-    rotate(el, rotateDegree * -1, `translate(${orgTranslate[0]}, ${orgTranslate[1]})`)
-    adjustTextAnchor(el, pieceDegree, rotateDegree)
-  })
-}
-
-hoverPath.on('click', hoverPathClicked)
-
-// init state
-hoverPathClicked.bind(d3.select('.hover-layer').node())(d3.select('.hover-layer').data()[0])
+// Load example pie radar chart with example data
+d3.json('./example.json', pieRadar);
