@@ -1,6 +1,6 @@
 # D3 Pie Radar Chart
 
-This repository is an example of what I had in mind when suggesting a "Trivial Pursuit piece"-style badge.
+This repository is an example of what I had in mind when suggesting a "Trivial Pursuit piece"-style badge, visualizing [:octocat:nmind/coding-standards-certification checklists](https://github.com/nmind/coding-standards-certification/tree/master/checklists)
 
 Adapted from [D3 Chart Samples](https://github.com/CodinCat/d3-chart-samples) by **[@CodinCat](https://github.com/CodinCat)**
 

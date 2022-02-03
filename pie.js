@@ -1,12 +1,12 @@
 /* The wedges in the pie */
-const wedges = ['Coding', 'Testing', 'Performance', 'Terminology', 'Documentation'];
+const wedges = ['Coding', 'Testing', 'Infrastructure', 'Documentation'];
 
 /** Function to take an object of {label: tier} items and generate a pie radar plot of that object with the wedges as defined above.
  * @param {object} initialData The initial data with {label: tier} items, e.g. {'Coding': 'bronze'}
  * @returns null
  */
 function pieRadar(initialData) {
-  /* Restructure data for D3 ease */ 
+  /* Restructure data for D3 ease */
   const data = wedges.map(d => {
     if (Object.keys(initialData).includes(d)) {
       return { 'label': d, 'tier': initialData[d] }

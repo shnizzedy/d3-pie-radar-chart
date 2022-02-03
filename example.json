@@ -1,6 +1,5 @@
 {
   "Coding": "silver",
-  "Performance": "bronze",
-  "Terminology": "gold",
-  "Documentation": "silver"
+  "Infrastructure": "bronze",
+  "Documentation": "gold"
 }
